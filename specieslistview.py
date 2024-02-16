@@ -7,6 +7,8 @@
 #
 #========================================================================
 
+import tkinter as tk
+
 from baseview import BaseView
 
 
@@ -16,6 +18,8 @@ class SpeciesListView(BaseView):
         self.__model = model
         self.__controller = controller
 
-        # debug for layout
-        self.getWidget().configure(background="blue")
+        # for layout debug
+        self.getWidget().config(bg='yellow')
+        label = tk.Label(self.getWidget(), text="SpeciesListView")
+        label.grid(row=0, column=0, sticky=tk.N+tk.E+tk.S+tk.W)
 

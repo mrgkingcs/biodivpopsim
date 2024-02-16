@@ -7,6 +7,7 @@
 #
 #========================================================================
 
+import tkinter as tk
 from baseview import BaseView
 
 
@@ -15,3 +16,8 @@ class SimControlView(BaseView):
         super().__init__(tkRoot)
         self.__model = model
         self.__controller = controller
+
+        # for layout debug
+        self.getWidget().config(bg='yellow')
+        label = tk.Label(self.getWidget(), text="SimControlView")
+        label.grid(row=0, column=0, sticky=tk.N+tk.E+tk.S+tk.W)

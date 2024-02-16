@@ -49,11 +49,11 @@ class App:
 
     def setupViews(self):
         speciesListView = SpeciesListView(self.__root, self.__model, self.__controller)
-        speciesListView.getWidget().grid(row=0, column=5, rowspan=2, padx=PADDING, pady=PADDING, sticky=ALL_DIRS)
+        speciesListView.getWidget().grid(row=0, column=4, rowspan=2, padx=PADDING, pady=PADDING, sticky=ALL_DIRS)
         self.__views.append(speciesListView)
 
         simControlView = SimControlView(self.__root, self.__model, self.__controller)
-        simControlView.getWidget().grid(row=2, column=5, padx=PADDING, pady=PADDING, sticky=ALL_DIRS)
+        simControlView.getWidget().grid(row=2, column=4, padx=PADDING, pady=PADDING, sticky=ALL_DIRS)
         self.__views.append(simControlView)
 
         seriesCounter = 0
@@ -61,7 +61,9 @@ class App:
             timeSeriesView = TimeSeriesGraphView(self.__root, self.__model, seriesID, self.__controller)
             graphRow = int(seriesCounter / NUM_COLUMNS_OF_GRAPHS)
             graphColumn = seriesCounter % NUM_COLUMNS_OF_GRAPHS
-            timeSeriesView.getWidget().grid(row=graphRow, column=graphColumn, padx=PADDING, pady=PADDING, sticky=ALL_DIRS)
+            timeSeriesView.getWidget().grid(row=graphRow, column=graphColumn,
+                                            padx=PADDING, pady=PADDING,
+                                            sticky=ALL_DIRS)
             self.__views.append(timeSeriesView)
             seriesCounter += 1
 
