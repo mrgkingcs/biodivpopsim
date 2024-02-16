@@ -26,3 +26,7 @@ class TimeSeriesGraphView(BaseView):
         label = tk.Label(self.getWidget(), text=str(seriesID))
         label.grid(row=0, column=0, sticky=tk.N+tk.E+tk.S+tk.W)
 
+    def timeSeriesUpdated(self, seriesData):
+        """Re-plot time series to canvas"""
+        pass
+

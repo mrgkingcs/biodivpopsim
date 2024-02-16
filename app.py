@@ -35,17 +35,17 @@ class App:
         self.setupController()
         self.setupViews()
 
+        # for now, auto-start sim
+        self.__controller.tick()
+
         self.__root.mainloop()
 
     def setupModel(self):
         self.__model = TimeSeriesModel()
-
-        #just dummy model for now
-        for count in range(10):
-            self.__model.addTimeSeries("DummySeries"+str(count+1))
+        # allow controller to do model setup
 
     def setupController(self):
-        self.__controller = PopSimController(self.__model)
+        self.__controller = PopSimController(self.__root, self.__model)
 
     def setupViews(self):
         speciesListView = SpeciesListView(self.__root, self.__model, self.__controller)

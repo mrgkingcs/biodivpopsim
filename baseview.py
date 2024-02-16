@@ -16,3 +16,6 @@ class BaseView:
 
     def getWidget(self):
         return self.__widget
+
+    def timeSeriesUpdated(self, seriesData):
+        pass
