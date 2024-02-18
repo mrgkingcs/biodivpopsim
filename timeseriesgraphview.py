@@ -16,6 +16,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class TimeSeriesGraphView(BaseView):
     DPI = 72
+    FONT_SIZE = 18
 
     def __init__(self, tkRoot, model, seriesID, controller):
         super().__init__(tkRoot)
@@ -42,10 +43,10 @@ class TimeSeriesGraphView(BaseView):
         self.__plot.spines['top'].set_visible(False)
         self.__plot.spines['right'].set_visible(False)
 
-        self.__plot.set_title(seriesID)
-        self.__plot.set_xlabel("Year")
+        self.__plot.set_title(seriesID, fontsize=TimeSeriesGraphView.FONT_SIZE)
+        self.__plot.set_xlabel("Year", fontsize=TimeSeriesGraphView.FONT_SIZE)
         self.__plot.set_xlim([0, 10])
-        self.__plot.set_ylabel("Population")
+        self.__plot.set_ylabel("Population", fontsize=TimeSeriesGraphView.FONT_SIZE)
         self.__plot.set_ylim([0, 10])
 
         self.__populationLine, = self.__plot.plot([0, 1], [0, 0]) # apparently plot returns a tuple
