@@ -20,6 +20,8 @@ class PopSimController:
         self.__dummyAmplitude = 5
         self.__dummyPhaseInc = pi / 10
 
+        self.__tickDelay = 1000
+
         self.__model.reset(startYear=2024)
         for count in range(10):
             seriesID = "DummySeries"+str(count+1)
@@ -37,5 +39,7 @@ class PopSimController:
                 newPop = 0
             self.__model.setSeriesValue(seriesID, newPop)
 
-        self.__tkRoot.after(1000, lambda: self.tick())
+        self.__tkRoot.after(self.__tickDelay, lambda: self.tick())
 
+    def setSimRate(self, rate):
+        self.__tickDelay = int(1000 / pow((rate+1), 2))

@@ -14,12 +14,14 @@ class TimeSeriesModel:
         self.__endYear = self.__startYear
         self.__timeSeriesDict = {}
         self.__timeSeriesSubscribers = {}
+        self.__yearSubscribers = []
 
     def reset(self, startYear=0):
         self.__startYear = startYear
         self.__endYear = self.__startYear
         self.__timeSeriesDict = {}
         self.__timeSeriesSubscribers = {}
+        self.__yearSubscribers = []
 
     def addTimeSeries(self, seriesID):
         """Creates a new time series and associated subscriber list"""
@@ -38,6 +40,9 @@ class TimeSeriesModel:
     def subscribeToAllSeries(self, subscriber):
         for subscriberList in self.__timeSeriesSubscribers.values():
             subscriberList.append(subscriber)
+
+    def subscribeToYearChange(self, subscriber):
+        self.__yearSubscribers.append(subscriber)
 
     def getCurrentYear(self):
         """returns most recent year in model's timeseries"""
@@ -59,6 +64,12 @@ class TimeSeriesModel:
             if len(values) < numSeriesEntries:
                 numToAdd = numSeriesEntries - len(values)
                 self.__timeSeriesDict[seriesID] += [valueToAdd]*numToAdd
+
+        yearData = { "startYear": self.__startYear,
+                     "endYear": self.__endYear
+                     }
+        for subscriber in self.__yearSubscribers:
+            subscriber.yearsUpdated(yearData)
 
     def getSeriesValue(self, seriesID, year=None):
         """Get a value from a time series.
