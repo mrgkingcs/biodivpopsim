@@ -8,12 +8,14 @@
 #========================================================================
 
 from math import pi, cos
+from popsimcalculator import PopSimCalculator
 
 
 class PopSimController:
     def __init__(self, tkRoot, timeSeriesModel):
         self.__tkRoot = tkRoot
         self.__model = timeSeriesModel
+        self.__calculator = PopSimCalculator()
 
         # just dummy model for now
         self.__dummyPhase = 0
@@ -25,10 +27,9 @@ class PopSimController:
 
         # set up model
         self.__model.reset(startYear=2024)
-        for count in range(10):
-            seriesID = "DummySeries"+str(count+1)
-            self.__model.addTimeSeries(seriesID)
-            self.__model.setSeriesValue(seriesID, 50)
+        for speciesID in self.__calculator.getSpeciesIDList():
+            self.__model.addTimeSeries(speciesID)
+            self.__model.setSeriesValue(speciesID, 50)
 
         # set up state variables
         self.__stateSubscribers = []
@@ -42,13 +43,19 @@ class PopSimController:
         elif self.__playing:
             self.__dummyPhase += self.__dummyPhaseInc
             prevYear = self.__model.getCurrentYear()
+            prevYearPopulations = self.__model.getCurrentValues()
+
+            newYearPopulations = self.__calculator.doSimulation(prevYearPopulations)
+
             self.__model.advanceYear()
-            for seriesID in self.__model.getSeriesIDList():
-                prevPop = self.__model.getSeriesValue(seriesID, prevYear)
-                newPop = int(prevPop + cos(self.__dummyPhase)*self.__dummyAmplitude)
-                if newPop < 0:
-                    newPop = 0
-                self.__model.setSeriesValue(seriesID, newPop)
+            self.__model.setCurrentValues(newYearPopulations)
+
+            # for seriesID in self.__model.getSeriesIDList():
+            #     prevPop = self.__model.getSeriesValue(seriesID, prevYear)
+            #     newPop = int(prevPop + cos(self.__dummyPhase)*self.__dummyAmplitude)
+            #     if newPop < 0:
+            #         newPop = 0
+            #     self.__model.setSeriesValue(seriesID, newPop)
 
             self.__tkRoot.after(self.__tickDelay, lambda: self.tick())
 

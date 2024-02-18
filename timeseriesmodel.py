@@ -99,6 +99,16 @@ class TimeSeriesModel:
             # inform subscribers of change in time series
             self.__informTimeSeriesSubscribers(seriesID)
 
+    def getCurrentValues(self):
+        result = {}
+        for seriesID, valueList in self.__timeSeriesDict.items():
+            result[seriesID] = valueList[-1]
+        return result
+
+    def setCurrentValues(self, newValuesDict):
+        for seriesID, value in newValuesDict.items():
+            self.setSeriesValue(seriesID, value)
+
     def erase(self, startYear=None):
         if startYear is None:
             startYear = self.__startYear
