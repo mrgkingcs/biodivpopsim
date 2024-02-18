@@ -20,14 +20,18 @@ class PopSimController:
         self.__dummyAmplitude = 5
         self.__dummyPhaseInc = pi / 10
 
+        # ms delay between each tick
         self.__tickDelay = 1000
 
+        # set up model
         self.__model.reset(startYear=2024)
         for count in range(10):
             seriesID = "DummySeries"+str(count+1)
             self.__model.addTimeSeries(seriesID)
             self.__model.setSeriesValue(seriesID, 50)
 
+        # set up state variables
+        self.__stateSubscribers = []
         self.__playing = False
         self.__resetOnTick = False
 
@@ -54,16 +58,40 @@ class PopSimController:
     def startSim(self):
         if not self.__playing:
             self.__playing = True
+            self.__informStateSubscribers()
             self.tick()
 
     def resetSim(self):
         if self.__playing:
             self.__resetOnTick = True
         else:
+            # stash initial values
+            startYear = self.__model.getStartYear()
+            initialValues = {}
+            for seriesID in self.__model.getSeriesIDList():
+                initialValues[seriesID] = self.__model.getSeriesValue(seriesID, startYear)
+
             self.__model.erase(startYear=2024)
+
+            # restore initial values
+            for seriesID, value in initialValues.items():
+                self.__model.setSeriesValue(seriesID, value)
+
         self.__playing = False
+        self.__informStateSubscribers()
 
     def pauseUnpauseSim(self):
         self.__playing = not self.__playing
+        self.__informStateSubscribers()
         if self.__playing:
             self.tick()
+
+    def overrideSeriesValue(self, seriesID, newValue):
+        self.__model.setSeriesValue(seriesID, newValue)
+
+    def subscribeToStateChanges(self, subscriber):
+        self.__stateSubscribers.append(subscriber)
+
+    def __informStateSubscribers(self):
+        for subscriber in self.__stateSubscribers:
+            subscriber.simStateChanged({"Playing": self.__playing})

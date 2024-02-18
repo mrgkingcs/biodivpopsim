@@ -35,8 +35,7 @@ class App:
         self.setupController()
         self.setupViews()
 
-        # for now, auto-start sim
-        self.__controller.tick()
+        self.__model.informAllSubscribers()
 
         self.__root.mainloop()
 

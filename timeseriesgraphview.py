@@ -24,7 +24,6 @@ class TimeSeriesGraphView(BaseView):
         self.__controller = controller
 
         self.__seriesID = seriesID
-        self.__model.subscribeToSeries(seriesID, self)
 
         # create the canvas on which to draw the graph
         self.__graphCanvas = tk.Canvas(self.getWidget())
@@ -52,6 +51,9 @@ class TimeSeriesGraphView(BaseView):
         self.__populationLine, = self.__plot.plot([0, 1], [0, 0]) # apparently plot returns a tuple
 
         self.__graph.get_tk_widget().pack()
+
+        # subscribe to changes in the time series
+        self.__model.subscribeToSeries(self.__seriesID, self)
 
         # for layout debug
         self.getWidget().config(bg='red')

@@ -38,11 +38,14 @@ class TimeSeriesModel:
             self.__timeSeriesSubscribers[seriesID].append(subscriber)
 
     def subscribeToAllSeries(self, subscriber):
-        for subscriberList in self.__timeSeriesSubscribers.values():
-            subscriberList.append(subscriber)
+        for seriesID in self.__timeSeriesDict:
+            self.subscribeToSeries(seriesID, subscriber)
 
     def subscribeToYearChange(self, subscriber):
         self.__yearSubscribers.append(subscriber)
+
+    def getStartYear(self):
+        return self.__startYear
 
     def getCurrentYear(self):
         """returns most recent year in model's timeseries"""
@@ -111,6 +114,11 @@ class TimeSeriesModel:
         # inform all subsribers
         self.__informYearSubscribers()
         for seriesID in self.__timeSeriesDict.keys():
+            self.__informTimeSeriesSubscribers(seriesID)
+
+    def informAllSubscribers(self):
+        self.__informYearSubscribers()
+        for seriesID in self.__timeSeriesDict:
             self.__informTimeSeriesSubscribers(seriesID)
 
     def __informYearSubscribers(self):

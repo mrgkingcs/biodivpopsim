@@ -25,7 +25,6 @@ class SimControlView(BaseView):
         # connect to other app components
         self.__model = model
         self.__controller = controller
-        self.__model.subscribeToYearChange(self)
 
         # configure the grid layout
         for column in range(3):
@@ -75,18 +74,19 @@ class SimControlView(BaseView):
         resetButton.grid(row=3, column=0, stick='NEWS')
 
         self.__playIcon = tk.PhotoImage(file=path.join(baseIconPath, "icons8-circled-play-64.png"))
-        playButton = tk.Button(self.getWidget(), text="Start",
-                               image=self.__playIcon,
-                               compound=tk.TOP,
-                               command=lambda: self.startSim())
-        playButton.grid(row=3, column=1, stick='NEWS')
+        self.__playButton = tk.Button(self.getWidget(), text="Start",
+                                      image=self.__playIcon,
+                                      compound=tk.TOP,
+                                      command=lambda: self.startSim())
+        self.__playButton.grid(row=3, column=1, stick='NEWS')
 
         self.__pauseIcon = tk.PhotoImage(file=path.join(baseIconPath, "icons8-pause-button-64.png"))
-        pauseButton = tk.Button(self.getWidget(), text="Pause",
-                               image=self.__pauseIcon,
-                               compound=tk.TOP,
-                               command=lambda: self.pauseSim())
-        pauseButton.grid(row=3, column=2, stick='NEWS')
+        self.__pauseButton = tk.Button(self.getWidget(), text="Pause",
+                                       image=self.__pauseIcon,
+                                       compound=tk.TOP,
+                                       state='disabled',
+                                       command=lambda: self.pauseSim())
+        self.__pauseButton.grid(row=3, column=2, stick='NEWS')
 
         # add the required licencing link to icons8.com
         licenceLabel = tk.Label(self.getWidget(), text="Icons by icons8.com", justify=tk.CENTER,
@@ -95,10 +95,24 @@ class SimControlView(BaseView):
         licenceLabel.bind("<Button-1>", lambda e: webbrowser.open_new("https://icons8.com"))
         licenceLabel.grid(row=4, column=0, columnspan=4, stick='NEWS')
 
+        # subscribe to state changes
+        self.__controller.subscribeToStateChanges(self)
+
+        # subscribe to year changes
+        self.__model.subscribeToYearChange(self)
+
         # for layout debug
         self.getWidget().config(bg='yellow')
         # label = tk.Label(self.getWidget(), text="SimControlView")
         # label.grid(row=0, column=0, sticky=tk.N+tk.E+tk.S+tk.W)
+
+    def simStateChanged(self, newStateInfo):
+        if newStateInfo["Playing"]:
+            self.__playButton.config(state='disabled')
+            self.__pauseButton.config(state='normal')
+        else:
+            self.__playButton.config(state='normal')
+            self.__pauseButton.config(state='disabled')
 
     def rateSliderChanged(self):
         self.__controller.setSimRate(self.__rateSliderVar.get())

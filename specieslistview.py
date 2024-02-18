@@ -23,8 +23,6 @@ class SpeciesListView(BaseView):
         self.__model = model
         self.__controller = controller
 
-        self.__model.subscribeToAllSeries(self)
-
         # for layout debug
         # self.getWidget().config(bg='yellow')
         # label = tk.Label(self.getWidget(), text="SpeciesListView")
@@ -44,8 +42,10 @@ class SpeciesListView(BaseView):
 
             textBox = tk.Entry(self.getWidget(), width=5,
                                justify='center',
+                               validate="focusout",
+                               validatecommand=lambda seriesID=seriesID: self.__overrideSeriesValue(seriesID),
                                font=SpeciesListView.FONT)
-
+            textBox.bind("<Return>", lambda e: self.getWidget().focus())
             textBox.grid(row=rowCount, column=1, sticky='EW',
                          padx=SpeciesListView.PADDING,
                          pady=SpeciesListView.PADDING)
@@ -53,6 +53,12 @@ class SpeciesListView(BaseView):
 
             self.getWidget().rowconfigure(rowCount, weight=1)
             rowCount += 1
+
+        # subscribe to state changes
+        self.__controller.subscribeToStateChanges(self)
+
+        # subscribe to time series changes
+        self.__model.subscribeToAllSeries(self)
 
     def timeSeriesUpdated(self, seriesData):
         seriesID = seriesData["seriesID"]
@@ -65,5 +71,26 @@ class SpeciesListView(BaseView):
 
             # update text box
             textBox = self.__textBoxes[seriesID]
+            prevState = textBox.cget('state')
+            textBox.config(state='normal')
             textBox.delete(0, tk.END)
             textBox.insert(0, str(newValue))
+            textBox.config(state=prevState)
+
+    def simStateChanged(self, newStateInfo):
+        newTextBoxState = 'normal'
+        if newStateInfo["Playing"]:
+            newTextBoxState = 'readonly'
+
+        for textBox in self.__textBoxes.values():
+            textBox.config(state=newTextBoxState)
+
+    def __overrideSeriesValue(self, seriesID):
+        textBox = self.__textBoxes[seriesID]
+        stringValue = textBox.get()
+        try:
+            intValue = int(stringValue)
+            if intValue >= 0:
+                self.__controller.overrideSeriesValue(seriesID, intValue)
+        except:
+            textBox.delete(0, tk.END)
