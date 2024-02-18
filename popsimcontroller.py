@@ -28,18 +28,42 @@ class PopSimController:
             self.__model.addTimeSeries(seriesID)
             self.__model.setSeriesValue(seriesID, 50)
 
-    def tick(self):
-        self.__dummyPhase += self.__dummyPhaseInc
-        prevYear = self.__model.getCurrentYear()
-        self.__model.advanceYear()
-        for seriesID in self.__model.getSeriesIDList():
-            prevPop = self.__model.getSeriesValue(seriesID, prevYear)
-            newPop = int(prevPop + cos(self.__dummyPhase)*self.__dummyAmplitude)
-            if newPop < 0:
-                newPop = 0
-            self.__model.setSeriesValue(seriesID, newPop)
+        self.__playing = False
+        self.__resetOnTick = False
 
-        self.__tkRoot.after(self.__tickDelay, lambda: self.tick())
+    def tick(self):
+        if self.__resetOnTick:
+            self.resetSim()
+            self.__resetOnTick = False
+        elif self.__playing:
+            self.__dummyPhase += self.__dummyPhaseInc
+            prevYear = self.__model.getCurrentYear()
+            self.__model.advanceYear()
+            for seriesID in self.__model.getSeriesIDList():
+                prevPop = self.__model.getSeriesValue(seriesID, prevYear)
+                newPop = int(prevPop + cos(self.__dummyPhase)*self.__dummyAmplitude)
+                if newPop < 0:
+                    newPop = 0
+                self.__model.setSeriesValue(seriesID, newPop)
+
+            self.__tkRoot.after(self.__tickDelay, lambda: self.tick())
 
     def setSimRate(self, rate):
         self.__tickDelay = int(1000 / pow((rate+1), 2))
+
+    def startSim(self):
+        if not self.__playing:
+            self.__playing = True
+            self.tick()
+
+    def resetSim(self):
+        if self.__playing:
+            self.__resetOnTick = True
+        else:
+            self.__model.erase(startYear=2024)
+        self.__playing = False
+
+    def pauseUnpauseSim(self):
+        self.__playing = not self.__playing
+        if self.__playing:
+            self.tick()

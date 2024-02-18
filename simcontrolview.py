@@ -67,25 +67,25 @@ class SimControlView(BaseView):
 
         # add the sim controls buttons
         baseIconPath = path.join(path.dirname(__file__), "icons")
-        self.__restartIcon = tk.PhotoImage(file=path.join(baseIconPath, "icons8-restart-64.png"))
-        restartButton = tk.Button(self.getWidget(), text="Restart",
-                                  image=self.__restartIcon,
-                                  compound=tk.TOP,
-                                  command=lambda event: self.restartSim())
-        restartButton.grid(row=3, column=0, stick='NEWS')
+        self.__resetIcon = tk.PhotoImage(file=path.join(baseIconPath, "icons8-restart-64.png"))
+        resetButton = tk.Button(self.getWidget(), text="Reset",
+                                image=self.__resetIcon,
+                                compound=tk.TOP,
+                                command=lambda: self.resetSim())
+        resetButton.grid(row=3, column=0, stick='NEWS')
 
         self.__playIcon = tk.PhotoImage(file=path.join(baseIconPath, "icons8-circled-play-64.png"))
         playButton = tk.Button(self.getWidget(), text="Start",
                                image=self.__playIcon,
                                compound=tk.TOP,
-                               command=lambda event: self.startSim())
+                               command=lambda: self.startSim())
         playButton.grid(row=3, column=1, stick='NEWS')
 
         self.__pauseIcon = tk.PhotoImage(file=path.join(baseIconPath, "icons8-pause-button-64.png"))
         pauseButton = tk.Button(self.getWidget(), text="Pause",
                                image=self.__pauseIcon,
                                compound=tk.TOP,
-                               command=lambda event: self.pauseSim())
+                               command=lambda: self.pauseSim())
         pauseButton.grid(row=3, column=2, stick='NEWS')
 
         # add the required licencing link to icons8.com
@@ -106,11 +106,11 @@ class SimControlView(BaseView):
     def yearsUpdated(self, yearData):
         self.__yearValueVar.set(str(yearData["endYear"]))
 
-    def restartSim(self):
-        pass
+    def resetSim(self):
+        self.__controller.resetSim()
 
     def startSim(self):
-        pass
+        self.__controller.startSim()
 
     def pauseSim(self):
-        pass
+        self.__controller.pauseUnpauseSim()

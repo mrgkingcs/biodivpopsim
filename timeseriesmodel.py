@@ -65,11 +65,7 @@ class TimeSeriesModel:
                 numToAdd = numSeriesEntries - len(values)
                 self.__timeSeriesDict[seriesID] += [valueToAdd]*numToAdd
 
-        yearData = { "startYear": self.__startYear,
-                     "endYear": self.__endYear
-                     }
-        for subscriber in self.__yearSubscribers:
-            subscriber.yearsUpdated(yearData)
+        self.__informYearSubscribers()
 
     def getSeriesValue(self, seriesID, year=None):
         """Get a value from a time series.
@@ -98,12 +94,38 @@ class TimeSeriesModel:
                 series[idx] = newValue
 
             # inform subscribers of change in time series
-            seriesData = {
-                "startYear": self.__startYear,
-                "endYear": self.__endYear,
-                "seriesID": seriesID,
-                "seriesValues": list(self.__timeSeriesDict[seriesID])
-            }
-            for subscriber in self.__timeSeriesSubscribers[seriesID]:
-                subscriber.timeSeriesUpdated(seriesData)
+            self.__informTimeSeriesSubscribers(seriesID)
 
+    def erase(self, startYear=None):
+        if startYear is None:
+            startYear = self.__startYear
+
+        # reset start and end year
+        self.__startYear = startYear
+        self.__endYear = self.__startYear
+
+        # reset all time series
+        for seriesID in self.__timeSeriesDict.keys():
+            self.__timeSeriesDict[seriesID] = [0]
+
+        # inform all subsribers
+        self.__informYearSubscribers()
+        for seriesID in self.__timeSeriesDict.keys():
+            self.__informTimeSeriesSubscribers(seriesID)
+
+    def __informYearSubscribers(self):
+        yearData = { "startYear": self.__startYear,
+                     "endYear": self.__endYear
+                     }
+        for subscriber in self.__yearSubscribers:
+            subscriber.yearsUpdated(yearData)
+
+    def __informTimeSeriesSubscribers(self, seriesID):
+        seriesData = {
+            "startYear": self.__startYear,
+            "endYear": self.__endYear,
+            "seriesID": seriesID,
+            "seriesValues": list(self.__timeSeriesDict[seriesID])
+        }
+        for subscriber in self.__timeSeriesSubscribers[seriesID]:
+            subscriber.timeSeriesUpdated(seriesData)
