@@ -66,9 +66,10 @@ class PopSimController:
 
     def startSim(self):
         if not self.__playing:
+            self.__tkRoot.focus()
             self.__playing = True
             self.__informStateSubscribers()
-            self.tick()
+            self.__tkRoot.after(10, lambda: self.tick())
 
     def resetSim(self):
         if self.__playing:
