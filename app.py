@@ -29,7 +29,6 @@ class App:
     def run(self):
         self.__root = tk.Tk()
         self.__root.title("Biodiversity Population Simulator")
-        self.__root.config(bg='blue')
 
         self.setupModel()
         self.setupController()

@@ -56,7 +56,7 @@ class TimeSeriesGraphView(BaseView):
         self.__model.subscribeToSeries(self.__seriesID, self)
 
         # for layout debug
-        self.getWidget().config(bg='red')
+        # self.getWidget().config(bg='red')
         # label = tk.Label(self.getWidget(), text=str(seriesID))
         # label.grid(row=0, column=0, sticky=tk.N+tk.E+tk.S+tk.W)
 
@@ -75,8 +75,11 @@ class TimeSeriesGraphView(BaseView):
         # calc y bounds
         maxPop = max(popValues)
         lowerYBound, upperYBound = self.__plot.get_ylim()
+        if maxPop > 0:
+            while upperYBound > 2*maxPop:
+                upperYBound /= 1.5
         while upperYBound < maxPop:
-            upperYBound *= 10
+            upperYBound *= 1.5
         self.__plot.set_ylim([lowerYBound, upperYBound])
 
         # update the data

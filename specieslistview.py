@@ -14,7 +14,7 @@ from baseview import BaseView
 
 class SpeciesListView(BaseView):
     PADDING = 2
-    FONT = ('Arial', 14)
+    FONT = ('Arial', 12)
 
     def __init__(self, tkRoot, model, controller):
         super().__init__(tkRoot)
@@ -30,7 +30,7 @@ class SpeciesListView(BaseView):
         # label.config(font=('Arial', 14))
 
         # actual widget layout
-        self.getWidget().columnconfigure(0, weight=2)
+        self.getWidget().columnconfigure(0, weight=1)
         self.getWidget().columnconfigure(1, weight=1)
 
         rowCount = 0
@@ -91,6 +91,9 @@ class SpeciesListView(BaseView):
         try:
             intValue = int(stringValue)
             if intValue >= 0:
+                #print(f"Overriding {seriesID} with {intValue}")
                 self.__controller.overrideSeriesValue(seriesID, intValue)
-        except:
+        except ValueError:
             textBox.delete(0, tk.END)
+
+        return True

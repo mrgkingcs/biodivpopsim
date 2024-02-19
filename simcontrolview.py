@@ -27,29 +27,31 @@ class SimControlView(BaseView):
         self.__controller = controller
 
         # configure the grid layout
-        for column in range(3):
+        for column in range(6):
             self.getWidget().columnconfigure(column, weight=1)
 
-        for row in range(3):
-            self.getWidget().rowconfigure(row, weight=1)
+        self.getWidget().rowconfigure(0, weight=2)
+        self.getWidget().rowconfigure(1, weight=1)
+        self.getWidget().rowconfigure(2, weight=2)
+        self.getWidget().rowconfigure(3, weight=2)
 
         # add the rate slider widgets
         slowLabel = tk.Label(self.getWidget(), text="Slow",
                              padx=SimControlView.PADDING, pady=SimControlView.PADDING,
                              font=SimControlView.FONT)
-        slowLabel.grid(row=0, column=0, stick='NEWS')
+        slowLabel.grid(row=0, column=0, columnspan=2, stick='NEWS')
 
         fastLabel = tk.Label(self.getWidget(), text="Fast",
                              padx=SimControlView.PADDING, pady=SimControlView.PADDING,
                              font=SimControlView.FONT)
-        fastLabel.grid(row=0, column=2, stick='NEWS')
+        fastLabel.grid(row=0, column=4, columnspan=2, stick='NEWS')
 
         self.__rateSliderVar = tk.IntVar()
         self.__rateSlider = ttk.Scale(self.getWidget(),
                                       from_=0, to=4,
                                       variable=self.__rateSliderVar,
                                       command=lambda event: self.rateSliderChanged())
-        self.__rateSlider.grid(row=1, column=0, columnspan=3, stick='EW')
+        self.__rateSlider.grid(row=1, column=1, columnspan=4, stick='EW')
 
         # add the current year widgets
         yearLabel = tk.Label(self.getWidget(), text="Year:", justify=tk.RIGHT,
@@ -71,14 +73,14 @@ class SimControlView(BaseView):
                                 image=self.__resetIcon,
                                 compound=tk.TOP,
                                 command=lambda: self.resetSim())
-        resetButton.grid(row=3, column=0, stick='NEWS')
+        resetButton.grid(row=3, column=0, columnspan=2, stick='NEWS')
 
         self.__playIcon = tk.PhotoImage(file=path.join(baseIconPath, "icons8-circled-play-64.png"))
         self.__playButton = tk.Button(self.getWidget(), text="Start",
                                       image=self.__playIcon,
                                       compound=tk.TOP,
                                       command=lambda: self.startSim())
-        self.__playButton.grid(row=3, column=1, stick='NEWS')
+        self.__playButton.grid(row=3, column=2, columnspan=2, stick='NEWS')
 
         self.__pauseIcon = tk.PhotoImage(file=path.join(baseIconPath, "icons8-pause-button-64.png"))
         self.__pauseButton = tk.Button(self.getWidget(), text="Pause",
@@ -86,14 +88,14 @@ class SimControlView(BaseView):
                                        compound=tk.TOP,
                                        state='disabled',
                                        command=lambda: self.pauseSim())
-        self.__pauseButton.grid(row=3, column=2, stick='NEWS')
+        self.__pauseButton.grid(row=3, column=4, columnspan=2, stick='NEWS')
 
         # add the required licencing link to icons8.com
         licenceLabel = tk.Label(self.getWidget(), text="Icons by icons8.com", justify=tk.CENTER,
                                 padx=SimControlView.PADDING, pady=SimControlView.PADDING,
                                 fg='blue', cursor="hand2")
         licenceLabel.bind("<Button-1>", lambda e: webbrowser.open_new("https://icons8.com"))
-        licenceLabel.grid(row=4, column=0, columnspan=4, stick='NEWS')
+        licenceLabel.grid(row=4, column=0, columnspan=6, stick='NEWS')
 
         # subscribe to state changes
         self.__controller.subscribeToStateChanges(self)
@@ -102,7 +104,7 @@ class SimControlView(BaseView):
         self.__model.subscribeToYearChange(self)
 
         # for layout debug
-        self.getWidget().config(bg='yellow')
+        # self.getWidget().config(bg='yellow')
         # label = tk.Label(self.getWidget(), text="SimControlView")
         # label.grid(row=0, column=0, sticky=tk.N+tk.E+tk.S+tk.W)
 

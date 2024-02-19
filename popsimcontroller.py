@@ -8,7 +8,7 @@
 #========================================================================
 
 from math import pi, cos
-from popsimcalculator import PopSimCalculator
+from popsimcalculator import *
 
 
 class PopSimController:
@@ -27,9 +27,11 @@ class PopSimController:
 
         # set up model
         self.__model.reset(startYear=2024)
+
+        # starting populations
         for speciesID in self.__calculator.getSpeciesIDList():
             self.__model.addTimeSeries(speciesID)
-            self.__model.setSeriesValue(speciesID, 50)
+            self.__model.setSeriesValue(speciesID, 0)
 
         # set up state variables
         self.__stateSubscribers = []
